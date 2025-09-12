@@ -1,44 +1,57 @@
 pipeline {
-    agent none
+    agent any
+
+    environment {
+        IMAGE_NAME = "weather-service-image"
+        CONTAINER_NAME = "weather-service-container"
+    }
+
     stages {
-        stage('Build with Maven') {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build JAR with Maven') {
             agent {
                 docker {
-                    image 'maven:3.9.9-eclipse-temurin-17'
+                    image 'maven:3.9.6-eclipse-temurin-17'
                     args '-v $HOME/.m2:/root/.m2'
                 }
             }
             steps {
-                echo "Building project with Maven..."
                 sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Build Docker Image') {
-            agent any
             steps {
-                echo "Building Docker image..."
-                sh '''
-                  docker build -t springboot-app .
-                '''
+                script {
+                    app = docker.build("${IMAGE_NAME}")
+                }
             }
         }
 
-        stage('Run Docker Container') {
-            agent any
+        stage('Run Container') {
             steps {
-                echo "Stopping old container (if exists) and running new one..."
-                sh '''
-                  docker rm -f springboot-app || true
-                  docker run -d --name springboot-app -p 8081:8080 springboot-app
-                '''
+                script {
+                    sh "docker rm -f ${CONTAINER_NAME} || true"
+                    app.run("-d -p 8080:8080 --name ${CONTAINER_NAME}")
+                }
             }
         }
     }
 
     post {
         always {
-            echo "Pipeline finished."
+            echo 'Pipeline finished (success or failure)'
+        }
+        success {
+            echo 'Application built and deployed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
