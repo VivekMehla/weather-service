@@ -17,7 +17,7 @@ pipeline {
             agent {
                 docker {
                     image 'maven:3.9.6-eclipse-temurin-17'
-                    args '-v /Users/Shared/m2-repo:/root/.m2'
+                    args '--rm -v /Users/Shared/m2-repo:/root/.m2'
                 }
             }
             steps {
@@ -28,7 +28,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    app = docker.build("${IMAGE_NAME}")
+                    def app = docker.build("${IMAGE_NAME}")
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     sh "docker rm -f ${CONTAINER_NAME} || true"
-                    app.run("-d -p 8080:8080 --name ${CONTAINER_NAME}")
+                    app.run("-d -p 8081:8080 --name ${CONTAINER_NAME}")
                 }
             }
         }
