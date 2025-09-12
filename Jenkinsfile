@@ -28,7 +28,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def app = docker.build("${IMAGE_NAME}")
+                    docker.build("${IMAGE_NAME}")
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     sh "docker rm -f ${CONTAINER_NAME} || true"
-                    app.run("-d -p 8081:8080 --name ${CONTAINER_NAME}")
+                    sh "docker run -d -p 8081:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
                 }
             }
         }
