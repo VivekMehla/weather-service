@@ -1,8 +1,4 @@
-FROM openjdk:17
-
-WORKDIR /app
-
-COPY target/weather-service-0.0.1-SNAPSHOT.jar /app/
-COPY src/main/resources/application.properties /app/
-
-CMD ["java", "-jar", "weather-service-0.0.1-SNAPSHOT.jar"]
+FROM eclipse-temurin:17-jdk-jammy
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
