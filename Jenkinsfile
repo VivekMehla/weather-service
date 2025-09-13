@@ -37,7 +37,9 @@ pipeline {
             steps {
                 script {
                     sh "docker rm -f ${CONTAINER_NAME} || true"
-                    sh "docker run -d -p 8081:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                    sh "sleep 2"
+                    def runOutput = sh(script: "docker run -d -p 8081:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}", returnStdout: true).trim()
+                    echo "Container started with ID: ${runOutput}"
                 }
             }
         }
