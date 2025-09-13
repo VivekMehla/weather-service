@@ -1,7 +1,8 @@
 FROM eclipse-temurin:17-jdk-jammy
 
-ARG JAR_FILE
+WORKDIR /app
 
-COPY ${JAR_FILE} app.jar
+# Copy the built jar from target folder
+COPY target/*.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
