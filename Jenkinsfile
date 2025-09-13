@@ -28,7 +28,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_NAME}")
+                    def jarFile = "target/weather-service-0.0.1-SNAPSHOT.jar"
+                    docker.build("${IMAGE_NAME}", "--build-arg JAR_FILE=${jarFile} .")
                 }
             }
         }
