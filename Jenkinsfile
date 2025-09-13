@@ -21,14 +21,21 @@ pipeline {
                 }
             }
             steps {
-                sh 'mvn clean install -DskipTests -f $WORKSPACE/pom.xml'
+                dir("$WORKSPACE") {
+                    sh 'mvn clean install -DskipTests'
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    def jarFile = "target/weather-service-0.0.1-SNAPSHOT.jar"
+                    // Find the JAR dynamically so you don’t need to hardcode version
+                    def jarFile = sh(
+                        script: "ls target/*.jar | grep -v 'original' | head -n 1",
+                        returnStdout: true
+                    ).trim()
+
                     docker.build(IMAGE_NAME, "--build-arg JAR_FILE=${jarFile} .")
                 }
             }
@@ -39,7 +46,10 @@ pipeline {
                 script {
                     sh "docker rm -f ${CONTAINER_NAME} || true"
                     sh "sleep 2"
-                    def runOutput = sh(script: "docker run -d -p 8081:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}", returnStdout: true).trim()
+                    def runOutput = sh(
+                        script: "docker run -d -p 8081:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}",
+                        returnStdout: true
+                    ).trim()
                     echo "Container started with ID: ${runOutput}"
                 }
             }
