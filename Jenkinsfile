@@ -17,11 +17,11 @@ pipeline {
             agent {
                 docker {
                     image 'maven:3.9.6-eclipse-temurin-17'
-                    args '--rm -v /Users/Shared/m2-repo:/root/.m2'
+                    args '--rm -v $WORKSPACE:$WORKSPACE -v /Users/Shared/m2-repo:/root/.m2'
                 }
             }
             steps {
-                sh 'mvn clean install -DskipTests'
+                sh 'mvn clean install -DskipTests -f $WORKSPACE/pom.xml'
             }
         }
 
@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     def jarFile = "target/weather-service-0.0.1-SNAPSHOT.jar"
-                    docker.build("${IMAGE_NAME}", "--build-arg JAR_FILE=${jarFile} .")
+                    docker.build(IMAGE_NAME, "--build-arg JAR_FILE=${jarFile} .")
                 }
             }
         }
