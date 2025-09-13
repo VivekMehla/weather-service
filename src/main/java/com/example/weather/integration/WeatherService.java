@@ -1,4 +1,4 @@
-package com.example.weather.service;
+package com.example.weather.integration;
 
 import com.example.weather.dto.DailyForecast;
 

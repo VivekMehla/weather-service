@@ -1,7 +1,7 @@
 package com.example.weather.controller;
 
 import com.example.weather.dto.DailyForecast;
-import com.example.weather.service.WeatherService;
+import com.example.weather.integration.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

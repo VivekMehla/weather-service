@@ -58,6 +58,9 @@ public class DailyForecast {
         return mock;
     }
 
-    // Optionally, override toString() for easier debugging
+    public boolean isMock() {
+        return true;
+    }
+
 }
 
