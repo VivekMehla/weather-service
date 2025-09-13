@@ -10,6 +10,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+                echo "Listing workspace contents for debugging:"
+                sh 'ls -R $WORKSPACE'
             }
         }
 
@@ -21,8 +23,20 @@ pipeline {
                 }
             }
             steps {
-                dir("$WORKSPACE") {
-                    sh 'mvn clean install -DskipTests'
+                script {
+                    // Try to locate pom.xml automatically
+                    def pomPath = sh(
+                        script: "find $WORKSPACE -name pom.xml | head -n 1",
+                        returnStdout: true
+                    ).trim()
+
+                    if (!pomPath) {
+                        error "No pom.xml found in workspace!"
+                    }
+
+                    echo "Using POM: ${pomPath}"
+
+                    sh "mvn clean install -DskipTests -f \"${pomPath}\""
                 }
             }
         }
@@ -36,6 +50,11 @@ pipeline {
                         returnStdout: true
                     ).trim()
 
+                    if (!jarFile) {
+                        error "No JAR built in target/"
+                    }
+
+                    echo "Building Docker image with JAR: ${jarFile}"
                     docker.build(IMAGE_NAME, "--build-arg JAR_FILE=${jarFile} .")
                 }
             }
