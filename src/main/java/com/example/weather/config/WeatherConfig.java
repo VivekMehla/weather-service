@@ -8,14 +8,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class WeatherConfig {
+
+    @Value("${weather.api.key}")
+    private String apiKey;
+
+    @Value("${weather.api.baseurl}")
+    private String weatherApiBaseUrl;
+
     @Bean
     public WeatherApiClient weatherApiClient(RestTemplate restTemplate, ObjectMapper objectMapper) {
         return new OpenWeatherMapApiClient(
-                "d2929e9483efc82c82c32ee7e02d563e",
-                "https://api.openweathermap.org/data/2.5/forecast",
+                apiKey,
+                weatherApiBaseUrl,
                 restTemplate,
                 objectMapper
         );

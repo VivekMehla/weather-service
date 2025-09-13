@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.List;
 
-
+@Data
 @Getter
 @Setter
 @Builder
@@ -15,6 +15,7 @@ import java.util.List;
 public class WeatherApiResponseDto {
     private List<WeatherEntry> list;
 
+    @Data
     @Getter
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -26,6 +27,7 @@ public class WeatherApiResponseDto {
         private Rain rain;
     }
 
+    @Data
     @Getter
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,6 +35,7 @@ public class WeatherApiResponseDto {
         private double temp;
     }
 
+    @Data
     @Getter
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -40,6 +43,7 @@ public class WeatherApiResponseDto {
         private String main;
     }
 
+    @Data
     @Getter
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -47,6 +51,7 @@ public class WeatherApiResponseDto {
         private double speed;
     }
 
+    @Data
     @Getter
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
