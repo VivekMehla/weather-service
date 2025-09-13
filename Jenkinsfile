@@ -34,7 +34,7 @@ pipeline {
         stage('Run Container') {
             steps {
                 sh "docker rm -f ${CONTAINER_NAME} || true"
-                sh "docker run -d -p 8081:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                sh "docker run -d -p 8082:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
             }
         }
     }
