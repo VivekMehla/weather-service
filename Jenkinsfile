@@ -28,7 +28,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build --no-cache -t ${CONTAINER_NAME}:latest ."
+                    sh "docker build --no-cache -t ${IMAGE_NAME}:latest ."
                 }
             }
         }
