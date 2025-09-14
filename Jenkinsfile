@@ -13,45 +13,38 @@ pipeline {
             }
         }
 
-        stage('Build JAR with Maven') {
+        stage('Build JAR') {
             agent {
                 docker {
                     image 'maven:3.9.6-eclipse-temurin-17'
-                    args '--rm -v /Users/Shared/m2-repo:/root/.m2'
+                    args '-v /Users/Shared/m2-repo:/root/.m2'
                 }
             }
             steps {
-                sh 'mvn clean install -DskipTests'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("${IMAGE_NAME}")
-                }
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Run Container') {
             steps {
-                script {
-                    sh "docker rm -f ${CONTAINER_NAME} || true"
-                    sh "docker run -d -p 8082:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
-                }
+                sh "docker rm -f ${CONTAINER_NAME} || true"
+                sh "docker run -d -p 8082:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline finished (success or failure)'
-        }
         success {
-            echo 'Application built and deployed successfully!'
+            echo '✅ Application built and deployed successfully!'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo '❌ Pipeline failed.'
         }
     }
 }
