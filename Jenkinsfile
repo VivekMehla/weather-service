@@ -21,14 +21,14 @@ pipeline {
                 }
             }
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn clean install -DskipTests'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build --no-cache -t ${IMAGE_NAME}:latest ."
+                    docker.build("${IMAGE_NAME}")
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     sh "docker rm -f ${CONTAINER_NAME} || true"
-                    sh "docker run -d -p 8082:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}:latest"
+                    sh "docker run -d -p 8082:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
                 }
             }
         }
