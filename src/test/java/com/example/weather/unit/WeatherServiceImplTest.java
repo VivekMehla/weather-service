@@ -34,10 +34,11 @@ class WeatherServiceImplTest {
     @Test
     void shouldReturnCachedForecastIfPresent() throws Exception {
         String city = "London";
+        Boolean isOffline = false;
         List<DailyForecast> mockForecast = createMockForecastList();
         when(cache.get(city)).thenReturn(mockForecast);
 
-        List<DailyForecast> result = weatherService.fetchForecast(city);
+        List<DailyForecast> result = weatherService.fetchForecast(city,isOffline);
 
         assertEquals(mockForecast, result);
         verify(cache, never()).put(anyString(), any());
@@ -47,12 +48,13 @@ class WeatherServiceImplTest {
     @Test
     void shouldFetchFromApiAndCacheIfNotInCache() throws Exception {
         String city = "Paris";
+        Boolean isOffline = false;
         when(cache.get(city)).thenReturn(null);
 
         WeatherApiResponseDto response = createMockWeatherApiResponse();
         when(apiClient.fetchWeatherData(city)).thenReturn(response);
 
-        List<DailyForecast> result = weatherService.fetchForecast(city);
+        List<DailyForecast> result = weatherService.fetchForecast(city,isOffline);
 
         assertEquals(1, result.size());
         assertEquals("2025-09-12 12:00:00", result.get(0).getDate());
@@ -62,10 +64,11 @@ class WeatherServiceImplTest {
     @Test
     void shouldReturnMockOnException() throws Exception {
         String city = "Tokyo";
+        Boolean isOffline = true;
         when(cache.get(city)).thenReturn(null);
         when(apiClient.fetchWeatherData(city)).thenThrow(new RuntimeException("API down"));
 
-        List<DailyForecast> result = weatherService.fetchForecast(city);
+        List<DailyForecast> result = weatherService.fetchForecast(city, isOffline);
 
         assertEquals(1, result.size());
         assertTrue(result.get(0).isMock());

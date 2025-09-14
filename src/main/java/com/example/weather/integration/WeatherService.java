@@ -5,5 +5,5 @@ import com.example.weather.dto.DailyForecast;
 import java.util.List;
 
 public interface WeatherService {
-    public List<DailyForecast> fetchForecast(String city);
+    public List<DailyForecast> fetchForecast(String city, Boolean isOffline);
 }

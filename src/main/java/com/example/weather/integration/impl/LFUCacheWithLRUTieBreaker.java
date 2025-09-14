@@ -1,10 +1,15 @@
 package com.example.weather.integration.impl;
+
 import com.example.weather.dto.DailyForecast;
 import com.example.weather.integration.WeatherCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class LFUCacheWithLRUTieBreaker implements WeatherCache {
+
+    private static final Logger logger = LoggerFactory.getLogger(LFUCacheWithLRUTieBreaker.class);
 
     private final int maxSize;
     private final Map<String, List<DailyForecast>> cache = new HashMap<>();
@@ -13,26 +18,33 @@ public class LFUCacheWithLRUTieBreaker implements WeatherCache {
 
     public LFUCacheWithLRUTieBreaker(int maxSize) {
         this.maxSize = maxSize;
+        logger.info("Initialized LFUCacheWithLRUTieBreaker with max size: {}", maxSize);
     }
 
     @Override
     public synchronized List<DailyForecast> get(String city) {
-        if (!cache.containsKey(city)) return null;
+        if (!cache.containsKey(city)) {
+            logger.debug("Cache miss for city: {}", city);
+            return null;
+        }
 
         frequencyMap.put(city, frequencyMap.getOrDefault(city, 0) + 1);
         lastAccessMap.put(city, System.nanoTime());
+        logger.debug("Cache hit for city: {} (freq: {})", city, frequencyMap.get(city));
         return cache.get(city);
     }
 
     @Override
     public synchronized void put(String city, List<DailyForecast> forecast) {
         if (cache.size() >= maxSize && !cache.containsKey(city)) {
+            logger.info("Cache size exceeded. Evicting least frequently used entry.");
             evict();
         }
 
         cache.put(city, forecast);
         frequencyMap.put(city, frequencyMap.getOrDefault(city, 0) + 1);
         lastAccessMap.put(city, System.nanoTime());
+        logger.debug("Inserted/Updated forecast for city: {} (current size: {})", city, cache.size());
     }
 
     private void evict() {
@@ -55,6 +67,7 @@ public class LFUCacheWithLRUTieBreaker implements WeatherCache {
             cache.remove(lfuCity);
             frequencyMap.remove(lfuCity);
             lastAccessMap.remove(lfuCity);
+            logger.info("Evicted city: {} (freq: {}, last access: {})", lfuCity, minFreq, oldestAccess);
         }
     }
 }

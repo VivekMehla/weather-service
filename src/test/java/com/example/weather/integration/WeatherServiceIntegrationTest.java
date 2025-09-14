@@ -18,8 +18,9 @@ class WeatherServiceIntegrationTest {
     @Test
     void shouldFetchAndCacheForecastSuccessfully() {
         String city = "London";
-        List<DailyForecast> result1 = weatherService.fetchForecast(city);
-        List<DailyForecast> result2 = weatherService.fetchForecast(city);
+        Boolean isOffline = true;
+        List<DailyForecast> result1 = weatherService.fetchForecast(city,isOffline);
+        List<DailyForecast> result2 = weatherService.fetchForecast(city,isOffline);
 
         assertNotNull(result1);
         assertFalse(result1.isEmpty());
