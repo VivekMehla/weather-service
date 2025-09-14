@@ -28,7 +28,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_NAME}")
+                    sh "docker build --no-cache -t ${CONTAINER_NAME}:latest ."
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     sh "docker rm -f ${CONTAINER_NAME} || true"
-                    sh "docker run -d -p 8082:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                    sh "docker run -d -p 8082:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}:latest"
                 }
             }
         }
